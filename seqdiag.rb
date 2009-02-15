@@ -15,10 +15,15 @@ class Model
 
     caller  = current_active
     callee  = self.identifier
-    params  = args.first ? "(#{args.first})" : '()'
+    params  = args.first ? "(#{args.first})" : (method != :new ? '()' : '')
     cond    = options[:cond] ? "#{options[:cond]} " : ''
     ids     = options[:ids] ? "(#{options[:ids] * ','})" : ''
     return_v = options[:return] ? "#{options[:return]}=" : ''
+
+    if options[:text]
+      method = options[:text]
+      params = ''
+    end
 
     puts '%s%s:%s%s.%s%s%s'% [ids, caller, return_v, callee, cond, method, params]
 
@@ -53,7 +58,10 @@ class Model
 #  end
 
   def self.pop_active_object
-    active_stack.pop
+    previous = active_stack.pop
+    if active_stack.last == previous
+      puts '%s[1]:_' % [active_stack.last.identifier]
+    end
   end
 
 end
@@ -62,10 +70,11 @@ def start_with(obj) # :yield:
   puts ' '
   Model.push_active_object(obj)
   yield
+  Model.pop_active_object
 end
 
-def line(message = '_')
-  message.gsub!('.', '\\.')
+def line(message)
+  message.gsub!(/([.:])/) { '\\' + $1 }
   puts '%s:%s' % [Model.get_active_object.identifier, message]
 end
 
@@ -76,3 +85,18 @@ def note(message, options = {})
   puts message
   puts "*%s" % [attach_to]
 end
+
+def fragment(type, text = nil) # :yield:
+  puts '[c:%s %s]' % [type, text]
+  yield
+  puts '[/c]'
+end
+
+# A separator cannot appear imediately after a fragment(). Use "line ''" to solve this.
+def separator(text)
+  puts '--%s' % text
+end
+
+#def pop_levels(n)
+#  puts '%s[%d]:_' % [Model.get_active_object.identifier, n]
+#end
