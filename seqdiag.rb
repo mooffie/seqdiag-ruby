@@ -73,9 +73,11 @@ def start_with(obj) # :yield:
   Model.pop_active_object
 end
 
-def line(message)
+def line(message, options = {})
   message.gsub!(/([.:])/) { '\\' + $1 }
+  puts "#!" + options[:css] if options[:css]
   puts '%s:%s' % [Model.get_active_object.identifier, message]
+  puts "#!" if options[:css]
 end
 
 def note(message, options = {})
