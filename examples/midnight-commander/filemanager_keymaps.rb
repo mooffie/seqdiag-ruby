@@ -9,7 +9,7 @@ lookup_style = "color: #000000; background-color: #ffcccc"
 
 start_with(wlib) {
 
-  mid.MSG_KEY() {
+  mid.MSG_KEY(:no_params => true) {
     note "handle main_x_map"
     note "handle ENTER if cmdline non-empty"
     note "handle +, -, * if cmdline empty"
@@ -21,8 +21,10 @@ start_with(wlib) {
   #note "when menu is active:"
   #menu.MSG_KEY() {}
 
-  pnl.MSG_KEY() {
-    line "command = LOOKUP (panel_map, parm)", :css => lookup_style
+  note "If key not handled: "
+
+  pnl.MSG_KEY(:no_params => true) {
+    line "command = LOOKUP (panel_map, key)", :css => lookup_style
     pnl.panel_execute_cmd("command") {
       line ""
     }
@@ -31,9 +33,9 @@ start_with(wlib) {
   }
 
   line ""
-  note "If nobody (i.e., panel) has handled the key:  "
-  mid.MSG_UNHANDLED_KEY() {
-    line "command = LOOKUP (main_map, parm)", :css => lookup_style
+  note "If panel hasn't handled the key:  "
+  mid.MSG_UNHANDLED_KEY(:no_params => true) {
+    line "command = LOOKUP (main_map, key)", :css => lookup_style
     mid.midnight_execute_cmd("command") {
       line ""
     }

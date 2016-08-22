@@ -24,6 +24,9 @@ class Model
       method = options[:text]
       params = ''
     end
+    if options[:no_params]  # don't show parentheses.
+      params = ''
+    end
 
     puts '%s%s:%s%s.%s%s%s'% [ids, caller, return_v, callee, cond, method, params]
 
